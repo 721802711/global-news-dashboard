@@ -12,6 +12,10 @@
   ],
   "routes": [
     {
+      "src": "/news-data.json",
+      "dest": "/news-data.json"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
