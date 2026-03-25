@@ -389,22 +389,42 @@
             showRefreshIndicator();
             document.getElementById('loading').style.display = 'block';
             
-            // Simulate API delay
-            setTimeout(() => {
-                // Use sample data for static version
-                newsData = [...SAMPLE_NEWS];
-                
-                // Update timestamp
-                const now = new Date();
-                document.getElementById('lastUpdated').textContent = 
-                    `Last updated: ${now.toLocaleTimeString()} ${now.toLocaleDateString()} (${newsData.length} items)`;
-                
-                // Render news
-                renderNews();
-                
-                hideRefreshIndicator();
-                document.getElementById('loading').style.display = 'none';
-            }, 800);
+            // Load news data from JSON file
+            fetch('news-data.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Use data from JSON file
+                    newsData = data.data || [...SAMPLE_NEWS];
+                    
+                    // Update timestamp
+                    const now = new Date();
+                    document.getElementById('lastUpdated').textContent = 
+                        `Last updated: ${now.toLocaleTimeString()} ${now.toLocaleDateString()} (${newsData.length} items)`;
+                    
+                    // Render news
+                    renderNews();
+                    
+                    hideRefreshIndicator();
+                    document.getElementById('loading').style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error loading news data:', error);
+                    // Fallback to sample data
+                    newsData = [...SAMPLE_NEWS];
+                    
+                    const now = new Date();
+                    document.getElementById('lastUpdated').textContent = 
+                        `Last updated: ${now.toLocaleTimeString()} ${now.toLocaleDateString()} (Sample data - ${newsData.length} items)`;
+                    
+                    renderNews();
+                    hideRefreshIndicator();
+                    document.getElementById('loading').style.display = 'none';
+                });
         }
         
         // Render news cards
